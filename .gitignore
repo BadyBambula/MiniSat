@@ -23,10 +23,6 @@ Testing/
 *.exe
 *.out
 
-# Project binaries (if created outside build/)
-MiniSat
-solver
-
 # IDE/editor
 .vscode/*
 !.vscode/settings.json
