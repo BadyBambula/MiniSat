@@ -26,6 +26,7 @@ int main(int argc, char **argv)
     CNF cnf;
     int variables = 0;
     int clauses = 0;
+    
     if (!load_cnf(path, cnf, variables, clauses))
         return 1;
 
@@ -55,17 +56,11 @@ int main(int argc, char **argv)
         for (size_t i = 1; i < result.assignment.size(); i++)
         {
             if (result.assignment[i] == 1)
-            {
                 std::cout << "x" << i << "=T\n";
-            }
             else if (result.assignment[i] == 0)
-            {
                 std::cout << "x" << i << "=F\n";
-            }
             else
-            {
                 std::cout << "x" << i << "=U\n";
-            }
         }
     }
 
