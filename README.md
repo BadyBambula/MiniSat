@@ -45,18 +45,16 @@ Zakladni pouziti:
 Skript projde vsechny `.cnf` soubory v zadane slozce, pusti na ne solver a ulozi CSV vysledky.
 
 ```bash
-python3 benchmark_runner.py <benchmark_dir> [solver_path]
+python3 benchmark_runner.py <benchmark_dir> [solver_path] -o [output_file]
 ```
 
 Priklady:
 
 ```bash
-python3 benchmark_runner.py benchmarks/20vars
-python3 benchmark_runner.py benchmarks/100vars build/solver (defaultne)
+python3 benchmark_runner.py benchmarks/20vars -o 20vars_results.csv
+python3 benchmark_runner.py benchmarks/100vars build/solver -o  50vars_results.csv
 ```
 
 Vystupni CSV je ulozeno do:
 
-- `benchmarks/results/<nazev>_results.csv`
-
-kde `<nazev>` je cast cesty za `benchmarks/` (napr. `20vars_results.csv`).
+- `benchmarks/results`

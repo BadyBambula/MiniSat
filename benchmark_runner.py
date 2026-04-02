@@ -1,6 +1,7 @@
 import subprocess
 import csv
 import sys
+import argparse
 from pathlib import Path
 
 
@@ -46,26 +47,33 @@ def run_benchmark(solver_path, cnf_file):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print(
-            "Usage: python3 benchmark_runner.py <benchmark_dir> [solver_path]")
-        print("Example: python3 benchmark_runner.py benchmarks/20vars build/solver")
-        sys.exit(1)
+    parser = argparse.ArgumentParser(
+        description='Run SAT solver benchmarks and save results to CSV.'
+    )
+    
+    parser.add_argument('benchmark_dir', help='Path to benchmark directory')
+    
+    parser.add_argument(
+        'solver_path',
+        nargs='?',
+        default='build/solver',
+        help='Path to solver binary (default: build/solver)'
+    )
+    
+    parser.add_argument(
+        '-o',
+        '--output',
+        dest='output_file',
+        help='Output CSV filename (saved under benchmarks/results)'
+    )
 
-    benchmark_dir = Path(sys.argv[1])
-    solver_path = Path(sys.argv[2]) if len(
-        sys.argv) > 2 else Path('build/solver')
-
-    benchmark_name = benchmark_dir.name
-    parts = benchmark_dir.parts
-    if 'benchmarks' in parts:
-        benchmark_index = parts.index('benchmarks')
-        if benchmark_index + 1 < len(parts):
-            benchmark_name = parts[benchmark_index + 1]
-
+    args = parser.parse_args()
     results_dir = Path.cwd() / 'benchmarks' / 'results'
     results_dir.mkdir(parents=True, exist_ok=True)
-    output_file = results_dir / f"{benchmark_name}_results.csv"
+
+    benchmark_dir = Path(args.benchmark_dir)
+    solver_path = Path(args.solver_path)
+    output_file = results_dir / args.output_file
 
     if not benchmark_dir.exists() or not benchmark_dir.is_dir():
         print(f"Error: Benchmark directory not found: {benchmark_dir}")
