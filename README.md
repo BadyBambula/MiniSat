@@ -1,6 +1,6 @@
-# MiniSat (School Project)
+# MiniSat
 
-Jednoduchy SAT solver pro formule v DIMACS CNF formatu.
+SatSolver pro formule v DIMACS CNF formatu.
 
 ## Pozadavky
 
@@ -18,7 +18,7 @@ Jednoduchy SAT solver pro formule v DIMACS CNF formatu.
 
 ## Build
 
-V koreni projektu spust:
+V koreni projektu spustte:
 
 ```bash
 cmake -S . -B build
@@ -37,22 +37,10 @@ Zakladni pouziti:
 
 ```bash
 ./build/solver <soubor.cnf>
+./build/solver <soubor.cnf> -q (vrati pouze SAT nebo UNSAT)
 ```
 
-Priklad:
-
-```bash
-./build/solver benchmarks/test-sat.cnf
-./build/solver benchmarks/test-unsat.cnf
-```
-
-Tichy rezim (jen vysledek):
-
-```bash
-./build/solver benchmarks/test-sat.cnf -q
-```
-
-## Benchmark skript (volitelne)
+## Benchmark skript
 
 Skript projde vsechny `.cnf` soubory v zadane slozce, pusti na ne solver a ulozi CSV vysledky.
 
@@ -64,7 +52,7 @@ Priklady:
 
 ```bash
 python3 benchmark_runner.py benchmarks/20vars
-python3 benchmark_runner.py benchmarks/100vars build/solver
+python3 benchmark_runner.py benchmarks/100vars build/solver (defaultne)
 ```
 
 Vystupni CSV je ulozeno do:
@@ -72,7 +60,3 @@ Vystupni CSV je ulozeno do:
 - `benchmarks/results/<nazev>_results.csv`
 
 kde `<nazev>` je cast cesty za `benchmarks/` (napr. `20vars_results.csv`).
-
-## Poznamka
-
-Pokud build selze kvuli cache nebo starym artefaktum, smaz `build/` a proved build znovu.
