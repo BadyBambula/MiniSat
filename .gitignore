@@ -1,0 +1,49 @@
+# Build directories
+build/
+cmake-build-*/
+
+# CMake generated files
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+Makefile
+CTestTestfile.cmake
+Testing/
+
+# Compiled binaries and libraries
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.a
+*.lib
+*.exe
+*.out
+
+# Project binaries (if created outside build/)
+MiniSat
+solver
+
+# IDE/editor
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Python cache (benchmark scripts)
+__pycache__/
+*.pyc
+
+# Benchmark outputs
+benchmarks/results/
+benchmark_results.csv
+**/benchmark_results.csv
