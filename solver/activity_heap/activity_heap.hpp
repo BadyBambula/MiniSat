@@ -3,8 +3,7 @@
 #include <utility>
 #include <vector>
 
-class VarActivityHeap
-{
+class VarActivityHeap {
 private:
     std::vector<int> heap;                     // heap vector
     std::vector<int> pos;                      // map telling us on which position is given variable (var -> index)
@@ -14,8 +13,8 @@ private:
     int left(int idx) const { return (2 * idx) + 1; }
     int right(int idx) const { return (2 * idx) + 2; }
 
-    bool better(int a, int b) const
-    {
+    bool better(int a, int b) const {
+
         // First we order by activity
         if ((*acts)[a] != (*acts)[b])
             return (*acts)[a] > (*acts)[b];
@@ -24,8 +23,7 @@ private:
         return a > b;
     }
 
-    void swap_nodes(int i, int j)
-    {
+    void swap_nodes(int i, int j) {
         std::swap(heap[i], heap[j]);
 
         pos[heap[i]] = i;
@@ -34,10 +32,8 @@ private:
 
     /// @brief bubbles the element on given index up in the tree to it's right position
     /// @param idx index of the element
-    void heapify_up(int idx)
-    {
-        while (idx > 0)
-        {
+    void heapify_up(int idx) {
+        while (idx > 0) {
             int p = parent(idx);
             if (!better(heap[idx], heap[p]))
                 break;
@@ -47,10 +43,8 @@ private:
         }
     }
 
-    void heapify_down(int idx)
-    {
-        while (true)
-        {
+    void heapify_down(int idx) {
+        while (true) {
             int l = left(idx);
             int r = right(idx);
             int best = idx;
@@ -76,30 +70,26 @@ public:
 
     bool empty() const { return heap.empty(); }
 
-    bool contains(int var) const
-    {
+    bool contains(int var) const {
         return var >= 0 &&
                var < pos.size() &&
                pos[var] != -1;
     }
 
-    int top() const
-    {
+    int top() const {
         if (empty())
             throw std::runtime_error("Heap is empty.");
 
         return heap.front();
     }
 
-    void reset(const std::vector<double> *activity_ref, int vars)
-    {
+    void reset(const std::vector<double> *activity_ref, int vars) {
         acts = activity_ref;
         heap.clear();
         heap.reserve(vars);
         pos.assign(vars + 1, -1);
 
-        for (int v = 1; v <= vars; v++)
-        {
+        for (int v = 1; v <= vars; v++) {
             pos[v] = heap.size();
             heap.push_back(v);
         }
@@ -108,16 +98,14 @@ public:
             heapify_down(i);
     }
 
-    void increase(int var)
-    {
+    void increase(int var) {
         if (!contains(var))
             return;
 
         heapify_up(pos[var]);
     }
 
-    void insert(int var)
-    {
+    void insert(int var) {
         if (contains(var))
             return;
 
@@ -127,8 +115,7 @@ public:
         heapify_up(pos[var]);
     }
 
-    void remove(int var)
-    {
+    void remove(int var) {
         if (!contains(var))
             return;
 
@@ -140,8 +127,7 @@ public:
         pos[heap.back()] = -1;
         heap.pop_back();
 
-        if (idx < heap.size())
-        {
+        if (idx < heap.size()) {
             heapify_down(idx);
             heapify_up(idx);
         }
