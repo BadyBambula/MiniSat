@@ -6,24 +6,22 @@ from pathlib import Path
 
 
 def parse_solver_output(output):
-    """Parse solver output and extract variables, clauses, result, and time."""
+    """Parse solver output and extract satisfiability, time needed, unit propagations and decision variables."""
     lines = output.strip().split('\n')
     data = {}
-
-    for line in lines:
-        line = line.strip()
-        if not line:
-            continue
-        if line.startswith('Variables:'):
-            data['variables'] = int(line.split(':')[1].strip())
-        elif line.startswith('Clauses:'):
-            data['clauses'] = int(line.split(':')[1].strip())
-        elif line.startswith('Result:'):
-            data['result'] = line.split(':')[1].strip()
-        elif line.startswith('Time needed:'):
-            parts = line.split(':')[1].strip().split()
-            if parts:
-                data['time'] = float(parts[0])
+    
+    time = 0
+    for i, line in enumerate(lines):
+        if i == 0:
+            data['result'] = line
+        elif i == 2 or i == 3:
+            time += float(line)
+        elif i == 4:
+            data['unit_props'] = int(line)
+        elif i == 5:
+            data['decision_vars'] = int(line)
+    
+    data['time'] = time
 
     return data
 
@@ -92,7 +90,7 @@ def main():
     print(f"Running benchmarks...")
 
     # Prepare CSV
-    fieldnames = ['filename', 'variables', 'clauses', 'result', 'time_seconds']
+    fieldnames = ['filename', 'result', 'time_seconds', 'unit_propagations', 'decision_variables']
     results = []
 
     for i, cnf_file in enumerate(cnf_files, 1):
@@ -107,10 +105,10 @@ def main():
 
         row = {
             'filename': str(relative_path),
-            'variables': parsed.get('variables', 'N/A'),
-            'clauses': parsed.get('clauses', 'N/A'),
             'result': parsed.get('result', 'N/A'),
-            'time_seconds': parsed.get('time', 'N/A')
+            'time_seconds': parsed.get('time', 'N/A'),
+            'unit_propagations': parsed.get('unit_props', 'N/A'),
+            'decision_variables': parsed.get('decision_vars')
         }
         results.append(row)
         print(f"OK ({parsed.get('result', 'N/A')}, {parsed.get('time', 0):.6f}s)")
@@ -130,10 +128,10 @@ def main():
         writer.writerows(results)
         writer.writerow({
             'filename': 'AVERAGE',
-            'variables': '',
-            'clauses': '',
             'result': f"{len(measured_times)} samples",
-            'time_seconds': f"{avg_time:.6f}"
+            'time_seconds': f"{avg_time:.6f}",
+            'unit_propagations': "",
+            'decision_variables': ""
         })
 
     print(f"\nResults saved to {output_file}")
@@ -142,3 +140,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    

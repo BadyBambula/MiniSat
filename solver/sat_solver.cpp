@@ -1,6 +1,7 @@
 #include "solver/sat_solver.hpp"
 #include "solver/activity_heap/activity_heap.hpp"
 
+#include <algorithm>
 #include <cassert>
 #include <cstdlib>
 #include <iostream>
@@ -25,13 +26,15 @@ public:
           var_decay(0.95),
           assigns(num_vars + 1, -1),
           level(num_vars + 1, 0),
-          tries(num_vars + 1, 0) {
+          tries(num_vars + 1, 0),
+          unit_props(0),
+          dec_vars(0) {
         for (Clause &cl : this->clauses) {
             watches[neg(cl[0])].push_back(&cl);
             if (cl.size() > 1)
                 watches[neg(cl[1])].push_back(&cl);
-            else 
-                enqueue(cl[0]);
+            else
+                enqueue(cl[0], true);
         }
     }
 
@@ -48,10 +51,13 @@ public:
 
         SolveResult result;
         result.satisfiable = sat;
-        result.assignment.assign(this->vars + 1, -1);
-
-        for (int v = 1; v <= this->vars; v++)
-            result.assignment[v] = assigns[v];
+        if (sat) {
+            result.true_literals = trail;
+            std::sort(result.true_literals.begin(), result.true_literals.end());
+            result.assignment = assigns;
+        }
+        result.unit_props = unit_props;
+        result.dec_vars = dec_vars;
 
         return result;
     }
@@ -83,6 +89,9 @@ private:
     std::vector<Lit> trail;             // stack containing the literals assigned to 1
     std::vector<std::size_t> trail_lim; // stack of indices to trail, on these indices are decision variables
 
+    int unit_props; // number of unit propagations
+    int dec_vars;   // number of decision variables
+
     /////////////////////////////////////////////////////////
     //
     // === Functions for literals ===
@@ -94,10 +103,6 @@ private:
         return sgn(l) ? assigned : neg(assigned);
     }
 
-    int var(Lit l) { return l / 2; }
-    int neg(Lit l) { return l ^ 1; }
-    bool sgn(Lit l) { return (l & 1) == 0; }
-
     /////////////////////////////////////////////////////////
     //
     // === Search function ===
@@ -106,14 +111,10 @@ private:
     bool search() {
         while (true) {
             if (!propagate()) {
-                if (!backtrack()) {
-                    return false;
-                }
-                continue;
+                if (backtrack()) continue;
+                return false;
             }
-            if (all_assigned()) {
-                return true;
-            }
+            if (all_assigned()) return true;
             assume(pick_decision_literal());
         }
     }
@@ -127,10 +128,11 @@ private:
 
     bool assume(Lit p) {
         trail_lim.push_back(trail.size());
+        dec_vars++;
         return enqueue(p);
     }
 
-    bool enqueue(Lit p) {
+    bool enqueue(Lit p, bool is_unit_prop = false) {
         int val = value(p);
 
         // Already assigned with value
@@ -139,6 +141,7 @@ private:
 
         // We need to assign
         int v = var(p);
+        if (is_unit_prop) unit_props++;
         assigns[v] = sgn(p) ? 1 : 0;
         level[v] = trail_lim.size();
         tries[v]++;
@@ -195,7 +198,7 @@ private:
         // In case it is a unit clause
         if (cl.size() == 1) {
             watches[p].push_back(&cl);
-            return enqueue(cl[0]);
+            return enqueue(cl[0], true);
         }
 
         // We ensure that the negation of the literal
@@ -213,7 +216,7 @@ private:
 
         // We want to find a literal further in the clause that we could
         // swap with c[1], so that we have a NON-FALSE
-        // literal on the first index
+        // literal on the index 1
         for (size_t i = 2; i < cl.size(); ++i) {
             if (value(cl[i]) == 0) continue;
 
@@ -228,8 +231,9 @@ private:
         // If value(c[0]) is FALSE, than we correctly detect
         // conflict in enqueue, since all the literals in
         // this clause are false. Else enqueue returns true
+        // and it was a unit propagation
         watches[p].push_back(&cl);
-        return enqueue(cl[0]);
+        return enqueue(cl[0], true);
     }
 
     /////////////////////////////////////////////////////////
@@ -257,23 +261,23 @@ private:
             // This is the decision variable
             Lit p = trail.back();
             trail.pop_back();
-            int decision_var = var(p);
+            int dec_var = var(p);
 
             // Reseting the assignment of the decision variable
-            assigns[decision_var] = -1;
+            assigns[dec_var] = -1;
 
             // If we have a try left, we enqueue the negation
             // of p, this will always return true since we just
             // reseted the assignment of the decision variable
-            if (tries[decision_var] < 2) return enqueue(neg(p));
+            if (tries[dec_var] < 2) return enqueue(neg(p));
 
             // Else we tried both assignments, we have to continue
             // with backtracking to the next decision variable
             trail_lim.pop_back();
-            level[decision_var] = 0;
-            tries[decision_var] = 0;
+            level[dec_var] = 0;
+            tries[dec_var] = 0;
 
-            var_q.insert(decision_var);
+            var_q.insert(dec_var);
         }
         return false;
     }

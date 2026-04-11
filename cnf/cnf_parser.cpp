@@ -81,12 +81,23 @@ bool load_cnf(const std::string &path, CNF &cnf, int &variables, int &clauses)
                 return false;
             }
 
-            int var_num = std::abs(var);
-            Lit lit = var > 0 ? 2*var_num : 2*var_num + 1;
-            clause.push_back(lit);
+            clause.push_back(decode_literal(var));
         }
         cnf.push_back(clause);
     }
 
     return true;
+}
+
+int decode_literal(int p) 
+{
+    int var_num = std::abs(p);
+    Lit lit = p > 0 ? 2*var_num : 2*var_num + 1;  
+    return lit;
+}
+
+int encode_literal(int p)
+{
+    int encoded_lit = (p & 1) == 0 ? p / 2 : -(p / 2);
+    return encoded_lit;
 }

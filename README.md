@@ -58,3 +58,16 @@ python3 benchmark_runner.py benchmarks/100vars build/solver -o  50vars_results.c
 Vystupni CSV je ulozeno do:
 
 - `benchmarks/results`
+
+
+for pair in \
+  "20vars 20vars_results.csv" \
+  "50vars 50vars_results.csv" \
+  "100vars 100vars_results.csv" \
+  "coloring/30vertices coloring_30V_results.csv" \
+  "coloring/100vertices coloring_100V_results.csv" \
+  "pidgeon-hole pidgeon-hole_results.csv"
+do
+  set -- ${(z)pair}
+  python3 benchmark_runner.py "benchmarks/$1" -o "$2"
+done
