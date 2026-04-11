@@ -30,7 +30,7 @@ public:
             watches[neg(cl[0])].push_back(&cl);
             if (cl.size() > 1)
                 watches[neg(cl[1])].push_back(&cl);
-            else
+            else 
                 enqueue(cl[0]);
         }
     }

@@ -34,14 +34,11 @@ def run_benchmark(solver_path, cnf_file):
         result = subprocess.run(
             [solver_path, cnf_file],
             capture_output=True,
-            text=True,
-            timeout=30
+            text=True
         )
         output = result.stdout + result.stderr
         parsed = parse_solver_output(output)
         return parsed
-    except subprocess.TimeoutExpired:
-        return {'error': 'Timeout'}
     except Exception as e:
         return {'error': str(e)}
 
