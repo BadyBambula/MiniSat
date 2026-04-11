@@ -121,6 +121,18 @@ def main():
     ]
     avg_time = (sum(measured_times) / len(measured_times)
                 ) if measured_times else 0.0
+    
+    measured_unit_props = [
+        row['unit_propagations']
+        for row in results
+    ]
+    avg_unit_props = (sum(measured_unit_props) / len(measured_unit_props)) if measured_unit_props else 0
+    
+    measured_dec_vars = [
+        row['decision_variables']
+        for row in results
+    ]
+    avg_dec_vars = (sum(measured_dec_vars) / len(measured_dec_vars)) if measured_dec_vars else 0
 
     with open(output_file, 'w', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)
@@ -130,8 +142,8 @@ def main():
             'filename': 'AVERAGE',
             'result': f"{len(measured_times)} samples",
             'time_seconds': f"{avg_time:.6f}",
-            'unit_propagations': "",
-            'decision_variables': ""
+            'unit_propagations': f"{avg_unit_props}",
+            'decision_variables': f"{avg_dec_vars}"
         })
 
     print(f"\nResults saved to {output_file}")

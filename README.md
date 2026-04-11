@@ -59,7 +59,9 @@ Vystupni CSV je ulozeno do:
 
 - `benchmarks/results`
 
+Rychlejsi testy muzete zkusit pomoci tohoto prikazu, 200vars uz trva dele
 
+```bash
 for pair in \
   "20vars 20vars_results.csv" \
   "50vars 50vars_results.csv" \
@@ -71,3 +73,4 @@ do
   set -- ${(z)pair}
   python3 benchmark_runner.py "benchmarks/$1" -o "$2"
 done
+```
