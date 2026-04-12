@@ -37,9 +37,14 @@ Zakladni pouziti:
 
 ```bash
 ./build/solver <soubor.cnf>
-./build/solver benchmarks/100vars/unsat/4.cnf
-./build/solver benchmarks/coloring/200vertices/sat/flat200-3.cnf
-./build/solver benchmarks/200vars/unsat/4.cnf
+```
+
+Priklady:
+
+```bash
+./build/solver benchmarks/100vars/unsat/4.cnf                     # (cca 0.5s)
+./build/solver benchmarks/coloring/200vertices/sat/flat200-3.cnf  # (cca 2s)
+./build/solver benchmarks/200vars/unsat/4.cnf                     # (cca 10s)
 ```
 
 ## Benchmark skript
