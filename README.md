@@ -37,7 +37,9 @@ Zakladni pouziti:
 
 ```bash
 ./build/solver <soubor.cnf>
-./build/solver <soubor.cnf> -q (vrati pouze SAT nebo UNSAT)
+./build/solver benchmarks/100vars/unsat/4.cnf
+./build/solver benchmarks/coloring/200vertices/sat/flat200-3.cnf
+./build/solver benchmarks/200vars/unsat/4.cnf
 ```
 
 ## Benchmark skript
